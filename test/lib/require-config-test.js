@@ -61,7 +61,7 @@ require(['jquery', 'jasmine-html', 'specs', 'jasmine-jquery', 'cfg'], function($
   jasmineEnv.updateInterval = 1000;
   jasmineEnv.addReporter(htmlReporter);
 
-  jasmine.getFixtures().fixturesPath = 'fixtures/';
+  jasmine.getFixtures().fixturesPath = 'fixtures/html/';
   jasmine.getJSONFixtures().fixturesPath = 'fixtures/json/';
   jasmine.getStyleFixtures().fixturesPath = 'fixtures/css/';
 
