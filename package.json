@@ -1,0 +1,16 @@
+{
+  "title": "Backbone.Marionette TodoMVC",
+  "name": "todomvc-marionette",
+  "version": "1.0.0",
+  "author": "Juan G. Hurtado <juan.g.hurtado@gmail.com>",
+  "description": "TodoMVC with Backbone.Marionette",
+  "devDependencies": {
+    "grunt" : "~0.4.1",
+    "grunt-contrib-clean" : "*",
+    "grunt-contrib-connect" : "*",
+    "grunt-contrib-less" : "*",
+    "grunt-contrib-requirejs" : "*",
+    "grunt-contrib-watch" : "*",
+    "grunt-exec" : "*"
+  }
+}

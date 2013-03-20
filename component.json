@@ -1,0 +1,20 @@
+{
+  "dependencies": {
+    "requirejs": "~2.1.5",
+    "requirejs-text": "~2.0.5",
+    "requirejs-tpl": "*",
+
+    "jquery": "~1.9.1",
+    "underscore": "~1.4.4",
+    "backbone": "~0.9.10",
+    "backbone.wreqr": "~0.1.1",
+    "backbone.eventbinder": "~1.0.2",
+    "backbone.babysitter": "git://github.com/marionettejs/backbone.babysitter.git#~0.0.4",
+    "backbone.localstorage" : "git://github.com/jeromegn/Backbone.localStorage.git#~1.1.0",
+    "marionette": "~1.0.0-rc6",
+
+    "jasmine": "~1.3.1",
+    "jasmine-jquery" : "~1.4.2",
+    "sinon" : "~1.6.0"
+  }
+}
