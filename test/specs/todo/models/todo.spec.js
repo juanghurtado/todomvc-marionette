@@ -40,6 +40,18 @@ define([
       expectTodoToBeInvalidWithMessage(todo, 'cannot have an empty text')
     });
 
+    it("Should call to .destroy() on 'remove' events", function() {
+      var todo = new Todo({
+        text : 'Sample todo'
+      });
+
+      var spy = spyOn(todo, 'destroy');
+
+      todo.trigger('remove');
+
+      expect(spy).toHaveBeenCalled();
+    });
+
     it('should not set an empty text', function() {
       var todo = new Todo({
         text : 'Sample todo'

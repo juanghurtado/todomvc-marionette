@@ -11,6 +11,10 @@ define(['backbone', 'underscore', 'backbone.localstorage'],function(Backbone, _)
       if (this.isNew()) {
         this.set('date', Date.now());
       }
+
+      this.bind('remove', function() {
+        this.destroy();
+      });
     },
 
     validate: function(attrs) {
