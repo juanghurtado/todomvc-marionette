@@ -12,7 +12,7 @@ define([
     todos : new Todos()
   };
 
-  CommunicationBus.commands.addHandler("todo:start", function(view){
+  CommunicationBus.commands.setHandler("todo:start", function(view){
     TodoController.showInitialLayoutOn(view);
   });
 
