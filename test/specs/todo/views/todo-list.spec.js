@@ -38,6 +38,19 @@ define([
       _todos.add(todo);
     }
 
+    function addDoneTodo() {
+      addTodo({
+        text : 'Done todo',
+        done : true
+      });
+    }
+
+    function addNotDoneTodo() {
+      addTodo({
+        text : 'Not done todo'
+      });
+    }
+
     function createSpyOnTodoListInvoke() {
       return spyOn(_todos, 'invoke');
     }
@@ -67,9 +80,7 @@ define([
     /* =|General specs
     ----------------------------------------- */
     it("Should require a collection of Todos attached", function() {
-      expect(function() {
-        instanceViewWithoutCollection();
-      }).toThrow(new Error("a collection must be provided"));
+      expect(instanceViewWithoutCollection).toThrow(new Error("a collection must be provided"));
     });
 
     it("Should have an itemView of type TodoItemView", function() {
@@ -117,24 +128,14 @@ define([
       });
 
       it("Should be checked if all todos are done", function() {
-        addTodo({
-          text : 'Done todo',
-          done : true
-        });
+        addDoneTodo();
 
         expect(_$toggleAll).toBe(':checked');
       });
 
       it("Should be unchecked if all todos are undone", function() {
-        addTodo({
-          text : 'Done todo',
-          done : true
-        });
-
-        addTodo({
-          text : 'Not done todo',
-          done : false
-        });
+        addDoneTodo();
+        addNotDoneTodo();
 
         expect(_$toggleAll).not.toBe(':checked');
       });
