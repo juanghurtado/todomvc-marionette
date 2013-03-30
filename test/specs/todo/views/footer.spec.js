@@ -5,183 +5,209 @@ define([
 ], function(FooterView, Todos, CommunicationBus) {
   describe("TO-DO footer view", function() {
 
-    beforeEach(function() {
-      this.todos = new Todos();
+    /* =HELPERS
+    --------------------------------------------------------------------------- */
+    var _todos;
+    var _footer;
 
-      this.footer = new FooterView({
-        collection : this.todos
+    function renderView() {
+      _todos = new Todos();
+
+      _footer = new FooterView({
+        collection : _todos
       });
 
-      this.footer.render();
+      _footer.render();
+    }
 
-      $('#sandbox').append(this.footer.$el);
+    function renderViewWithoutCollection() {
+      new FooterView()
+    }
+
+    function getClearCompletedButton() {
+      return _footer.$el.find('#clear-completed');
+    }
+
+    function getTodoCountText() {
+      return _footer.$el.find('#todo-count');
+    }
+
+    function getFilterLinks() {
+      return _footer.$el.find('#filters a');
+    }
+
+    function getFilterAllLink() {
+      return getFilterLinks().eq(0);
+    }
+
+    function getFilterActiveLink() {
+      return getFilterLinks().eq(1);
+    }
+
+    function getFilterCompletedLink() {
+      return getFilterLinks().eq(2);
+    }
+
+    function setFilter(filter) {
+      CommunicationBus.vent.trigger('todo:list:filter', filter);
+    }
+
+    function addDoneTodo() {
+      _todos.add({
+        text : 'Done 1',
+        done : true
+      });
+    }
+
+    function addNotDoneTodo() {
+      _todos.add({
+        text : 'Not done',
+        done : false
+      });
+    }
+
+    function resetTodoList() {
+      _todos.reset();
+    }
+
+    /* =BEFORE AND AFTER
+    --------------------------------------------------------------------------- */
+    beforeEach(function() {
+      renderView();
+
+      $('#sandbox').append(_footer.$el);
     });
 
     afterEach(function() {
       $('#sandbox').html('');
     });
 
+    /* =SPECS
+    --------------------------------------------------------------------------- */
+
+    /* =|General specs
+    ----------------------------------------- */
     it("Should require a collection of Todos attached", function() {
-      expect(function() {
-        var footer = new FooterView();
-      }).toThrow(new Error("a collection must be provided"));
+      expect(renderViewWithoutCollection).toThrow(new Error("a collection must be provided"));
     });
 
+    /* =|Filter links
+    ----------------------------------------- */
     describe("Filter links list", function() {
+      it("Should have a filter to view 'All' todos", function() {
+        var $link = getFilterAllLink();
 
-      it("Should have links to all 3 types of filters", function() {
-        var $links = this.footer.$el.find('#filters a');
-
-        expect($links.length).toBe(3);
-        expect($links.eq(0).attr('href')).toBe('#/');
-        expect($links.eq(1).attr('href')).toBe('#/active');
-        expect($links.eq(2).attr('href')).toBe('#/completed');
+        expect($link.attr('href')).toBe('#/');
       });
 
-      it("Should set 'selected' class on active filter", function() {
+      it("Should have a filter to view 'Active' todos", function() {
+        var $link = getFilterActiveLink();
 
-        var $links = this.footer.$el.find('#filters a');
-
-        expect($links.filter('.selected')).toBe($links.eq(0));
-
-        CommunicationBus.vent.trigger('todo:list:filter', 'active');
-        expect($links.filter('.selected')).toBe($links.eq(1));
-
-        CommunicationBus.vent.trigger('todo:list:filter', 'completed');
-        expect($links.filter('.selected')).toBe($links.eq(2));
+        expect($link.attr('href')).toBe('#/active');
       });
 
+      it("Should have a filter to view 'Completed' todos", function() {
+        var $link = getFilterCompletedLink();
+
+        expect($link.attr('href')).toBe('#/completed');
+      });
+
+      it("Should set 'All' filter as selected by default", function() {
+        expect(getFilterAllLink()).toHaveClass('selected');
+      });
+
+      it("Should set 'All' filter as selected after filtering by 'All' todos", function() {
+        setFilter('');
+
+        expect(getFilterAllLink()).toHaveClass('selected');
+      });
+
+      it("Should set 'Active' filter as selected after filtering by 'Active' todos", function() {
+        setFilter('active');
+
+        expect(getFilterActiveLink()).toHaveClass('selected');
+      });
+
+      it("Should set 'Completed' filter as selected after filtering by 'Completed' todos", function() {
+        setFilter('completed');
+
+        expect(getFilterCompletedLink()).toHaveClass('selected');
+      });
     });
 
+    /* =|Remaining tasks
+    ----------------------------------------- */
     describe("Remaining tasks count", function() {
-
       it("Should show how many tasks are not done", function() {
-        this.todos.add([
-          {
-            text : 'Not done 1',
-            done : false
-          }, {
-            text : 'Done 1',
-            done : true
-          }
-        ]);
+        addDoneTodo();
+        addNotDoneTodo();
+        addNotDoneTodo();
 
-        expect($('#todo-count strong')).toHaveText(/1/);
-
-        this.todos.add([
-          {
-            text : 'Not done 2',
-            done : false
-          }, {
-            text : 'Done 2',
-            done : true
-          }
-        ]);
-
-        expect($('#todo-count strong')).toHaveText(/2/);
+        expect(getTodoCountText()).toHaveText(/2/);
       });
 
-      it("Should handle plurals on text", function() {
-        this.todos.add({
-          text : 'Not done 1',
-          done : false
-        });
+      it("Should use singular form when only one todo left", function() {
+        addDoneTodo();
+        addNotDoneTodo();
 
-        expect($('#todo-count')).toHaveText(/item/);
-
-        this.todos.add({
-          text : 'Not done 2',
-          done : false
-        });
-
-        expect($('#todo-count')).toHaveText(/items/);
+        expect(getTodoCountText()).toHaveText(/item/);
       });
 
+      it("Should use plural form when more than one todo is left", function() {
+        addDoneTodo();
+        addNotDoneTodo();
+        addNotDoneTodo();
+
+        expect(getTodoCountText()).toHaveText(/items/);
+      });
     });
 
+    /* =|Clear completed tasks
+    ----------------------------------------- */
     describe("Clear completed tasks button", function() {
-
-      it("Should be hidden when no tasks on the collection", function() {
-        expect($('#clear-completed').length).toBe(0);
+      it("Should not be appended when there are no tasks", function() {
+        expect(getClearCompletedButton()).not.toExist();
       });
 
-      it("Should be hidden when no completed tasks on the collection", function() {
-        this.todos.add({
-          text : 'Sample TO-DO',
+      it("Should not be appended when there are no completed tasks", function() {
+        addNotDoneTodo();
+
+        expect(getClearCompletedButton()).not.toExist();
+      });
+
+      it("Should be appended when there are completed tasks", function() {
+        addDoneTodo();
+
+        expect(getClearCompletedButton()).toBeVisible();
+      });
+
+      it("Should not be appended after reseting todo list", function() {
+        addDoneTodo();
+        resetTodoList();
+
+        expect(getClearCompletedButton()).not.toExist();
+      });
+
+      it("Should remove done todos when clicked", function() {
+        addDoneTodo();
+        addDoneTodo();
+        addNotDoneTodo();
+
+        getClearCompletedButton().trigger('click');
+
+        expect(_todos.where({
           done : false
-        });
-        expect($('#clear-completed').length).toBe(0);
+        }).length).toBe(1);
       });
 
-      it("Should be visible when completed tasks are present on the collection", function() {
-        expect($('#clear-completed').length).toBe(0);
+      it("Should show the number of done todos", function() {
+        addDoneTodo();
+        addDoneTodo();
+        addNotDoneTodo();
+        addNotDoneTodo();
 
-        this.todos.add({
-          text : 'Sample TO-DO',
-          done : true
-        });
-
-        expect($('#clear-completed')).toBeVisible();
+        expect(getClearCompletedButton()).toHaveText(/2/);
       });
-
-      it("Should be hidden after reseting the collection", function() {
-        this.todos.add({
-          text : 'Sample TO-DO',
-          done : true
-        });
-
-        expect($('#clear-completed')).toBeVisible();
-
-        this.todos.reset();
-
-        expect($('#clear-completed').length).toBe(0);
-      });
-
-      it("Should remove done tasks on the collection when clicked", function() {
-        this.todos.add([
-          {
-            text : "Done 1",
-            done : true
-          },
-          {
-            text : "Done 2",
-            done : true
-          },
-          {
-            text : "Not done",
-            done : false
-          }
-        ]);
-
-        $('#clear-completed').trigger('click');
-
-        expect(this.todos.length).toBe(1);
-        expect(this.todos.at(0).get('done')).toBe(false);
-      });
-
-      it("Should show done tasks number on button text", function() {
-        this.todos.add([
-          {
-            text : "Done 1",
-            done : true
-          },
-          {
-            text : "Done 2",
-            done : true
-          },
-          {
-            text : "Not done 1",
-            done : false
-          },
-          {
-            text : "Not done 2",
-            done : false
-          }
-        ]);
-
-        expect($('#clear-completed')).toHaveText(/2/);
-      });
-
     });
 
   });
