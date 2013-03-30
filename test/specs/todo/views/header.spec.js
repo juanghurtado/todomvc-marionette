@@ -6,8 +6,12 @@ define([
 ], function(HeaderView, Todos, CommunicationBus, Marionette) {
   describe("TO-DO header view", function() {
 
+    /* =HELPERS
+    --------------------------------------------------------------------------- */
     var ENTER_KEY = 13;
-    var A_KEY = 65;
+    var _todos;
+    var _header;
+    var _$tf;
 
     function getEnterKeyEvent() {
       var e = jQuery.Event('keypress');
@@ -16,11 +20,11 @@ define([
       return e;
     }
 
-    function addTodoWithText(text, $tf) {
+    function addTodoWithText(text) {
       var e = getEnterKeyEvent();
 
-      $tf.val(text);
-      $tf.trigger(e);
+      _$tf.val(text);
+      _$tf.trigger(e);
     }
 
     function createMockOnTodosCreateMethod(todos) {
@@ -29,61 +33,72 @@ define([
       });
     }
 
-    beforeEach(function() {
-      this.todos = new Todos();
+    function renderView() {
+      _todos = new Todos();
 
-      createMockOnTodosCreateMethod(this.todos);
+      createMockOnTodosCreateMethod(_todos);
 
-      this.header = new HeaderView({
-        collection : this.todos
+      _header = new HeaderView({
+        collection : _todos
       });
 
-      this.header.render();
+      _header.render();
 
-      this.$tf = this.header.ui.textfield;
+      _$tf = _header.ui.textfield;
+    }
 
-      $('#sandbox').html(this.header.$el);
+    function renderViewWithoutCollection() {
+      new HeaderView();
+    }
+
+    function getFirstTodoText() {
+      return _todos.at(0).get('text');
+    }
+
+    /* =BEFORE AND AFTER
+    --------------------------------------------------------------------------- */
+    beforeEach(function() {
+      renderView();
+
+      $('#sandbox').html(_header.$el);
     });
 
     afterEach(function() {
       $('#sandbox').html('');
     });
 
+    /* =SPECS
+    --------------------------------------------------------------------------- */
     it("Should require a collection of Todos attached", function() {
-      expect(function() {
-        var wrapper = new HeaderView();
-      }).toThrow(new Error("a collection must be provided"));
+      expect(renderViewWithoutCollection).toThrow(new Error("a collection must be provided"));
     });
 
-    it("Should have an input with id 'new-todo'", function() {
-      expect(this.$tf).toExist();
-      expect(this.$tf).toHaveId('new-todo');
-      expect(this.$tf).toBeVisible();
+    it("Should have an input to insert new TODOs'", function() {
+      expect(_$tf).toBeVisible();
     });
 
     it("Should create a new todo on ENTER key press", function() {
-      expect(this.todos.length).toBe(0);
+      addTodoWithText('Good TODO');
 
-      addTodoWithText('Good TODO', this.$tf);
-
-      expect(this.todos.length).toBe(1);
-      expect(this.todos.at(0).get('text')).toBe('Good TODO');
+      expect(getFirstTodoText()).toBe('Good TODO');
     });
 
     it("Should not create a new todo on ENTER key press if input has no text", function() {
-      expect(this.todos.length).toBe(0);
+      addTodoWithText('');
 
-      addTodoWithText('', this.$tf);
-
-      expect(this.todos.length).toBe(0);
+      expect(_todos.length).toBe(0);
     });
 
     it("Should trim TODO text before saving", function() {
-      var e = getEnterKeyEvent();
+      addTodoWithText('   Good TODO   ');
 
-      addTodoWithText('   Good TODO   ', this.$tf);
+      expect(getFirstTodoText()).toBe('Good TODO');
+    });
 
-      expect(this.todos.at(0).get('text')).toBe('Good TODO');
+    it("Should clear input text after creating a new TODO", function() {
+      addTodoWithText('Good TODO');
+
+      expect(_$tf.val()).toBe('');
     });
 
   });
