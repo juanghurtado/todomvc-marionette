@@ -30,9 +30,7 @@ define(['modules/todo/todo-router'], function(TodoRouter) {
       return spyOn(_mockController, 'setFilter');
     }
 
-    /* =BEFORE AND AFTER
-    --------------------------------------------------------------------------- */
-    beforeEach(function() {
+    function createRouter() {
       _mockController = getMockController();
 
       _spy = createSpyOnMockControllerSetFilter();
@@ -40,6 +38,12 @@ define(['modules/todo/todo-router'], function(TodoRouter) {
       _router = new TodoRouter({
         controller: _mockController
       });
+    }
+
+    /* =BEFORE AND AFTER
+    --------------------------------------------------------------------------- */
+    beforeEach(function() {
+      createRouter();
 
       startBackboneHistory();
 
