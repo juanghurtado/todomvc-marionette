@@ -22,16 +22,29 @@ define([
       expect(todo.isValid()).toBe(false);
     }
 
+    function createEmptyTodo() {
+      return new Todo();
+    }
+
+    function createTodo() {
+      return new Todo({
+        text : 'Sample todo'
+      });
+    }
+
     /* =SPECS
     --------------------------------------------------------------------------- */
+
+    /* =|Global specs
+    ----------------------------------------- */
     it('Should have default attributes', function() {
-      var todo = new Todo();
+      var todo = createEmptyTodo();
 
       expectTodoToHaveDefaultAttributes(todo);
     });
 
     it('should not save when text is empty', function() {
-      var todo = new Todo();
+      var todo = createEmptyTodo();
 
       todo.save({
         'text': ''
@@ -41,9 +54,7 @@ define([
     });
 
     it("Should call to .destroy() on 'remove' events", function() {
-      var todo = new Todo({
-        text : 'Sample todo'
-      });
+      var todo = createTodo();
 
       var spy = spyOn(todo, 'destroy');
 
@@ -53,19 +64,18 @@ define([
     });
 
     it('should not set an empty text', function() {
-      var todo = new Todo({
-        text : 'Sample todo'
-      });
+      var todo = createTodo();
 
       todo.set('text', '');
 
       expectTodoToBeInvalid(todo)
     });
 
+    /* =|toggleState()
+    ----------------------------------------- */
     describe("toggleState()", function() {
-
       it("Should toggle models done state", function() {
-        var todo = new Todo();
+        var todo = createEmptyTodo();
 
         todo.toggleState();
 
@@ -77,11 +87,10 @@ define([
       });
 
       it("Should return model itself", function() {
-        var todo = new Todo();
+        var todo = createEmptyTodo();
 
         expect(todo.toggleState()).toBe(todo);
       });
-
     });
 
   });
