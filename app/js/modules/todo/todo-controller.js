@@ -1,6 +1,6 @@
 define([
   'modules/todo/views/wrapper',
-    'modules/todo/collections/todos',
+  'modules/todo/collections/todos',
   'utils/communication-bus'
 ], function(WrapperView, Todos, CommunicationBus) {
 
