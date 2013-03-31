@@ -135,7 +135,9 @@ define([
       doubleClickLabelOfFirstTodoInList();
 
       expect(getFirstTodoInList()).toHaveClass('editing');
-      expect(getTextFieldOfFirstTodoInList()).toBe(':focus');
+
+      // Should test against ':focus', but there is a bug on PhantomJS: https://github.com/ariya/phantomjs/issues/10427
+      expect(getTextFieldOfFirstTodoInList()).toBe(document.activeElement);
     });
 
     it("Should empty the textfield and remove 'editing' class on item after updating a todo", function() {
