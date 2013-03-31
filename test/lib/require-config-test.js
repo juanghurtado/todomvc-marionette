@@ -17,6 +17,7 @@ require.config({
 
     'jasmine': '../../components/jasmine/lib/jasmine-core/jasmine',
     'jasmine-html': '../../components/jasmine/lib/jasmine-core/jasmine-html',
+    'jasmine-console': '../../test/lib/jasmine-console-reporter',
     'jasmine-jquery': '../../components/jasmine-jquery/lib/jasmine-jquery',
     'sinon': '../../components/sinon/lib/sinon',
     'specs': '../../test/specs'
@@ -54,12 +55,14 @@ require.config({
   }
 });
 
-require(['jquery', 'jasmine-html', 'specs', 'jasmine-jquery', 'cfg'], function($, jasmine, specs) {
+require(['jquery', 'jasmine-html', 'jasmine-console', 'specs', 'jasmine-jquery', 'cfg'], function($, jasmine, ConsoleReporter, specs) {
   var jasmineEnv = jasmine.getEnv();
   var htmlReporter = new jasmine.HtmlReporter();
+  var consoleReporter = new ConsoleReporter();
 
   jasmineEnv.updateInterval = 1000;
   jasmineEnv.addReporter(htmlReporter);
+  jasmine.getEnv().addReporter(consoleReporter);
 
   jasmine.getFixtures().fixturesPath = 'fixtures/html/';
   jasmine.getJSONFixtures().fixturesPath = 'fixtures/json/';
