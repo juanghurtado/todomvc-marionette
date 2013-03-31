@@ -1,14 +1,13 @@
 define([
   'modules/todo/views/wrapper',
-  'modules/todo/views/header',
-  'modules/todo/views/footer',
-  'modules/todo/views/todo-list',
-  'modules/todo/views/todo-item',
+    'modules/todo/collections/todos',
   'utils/communication-bus'
-], function(WrapperView, HeaderView, FooterView, TodoListView, TodoItemView, CommunicationBus) {
+], function(WrapperView, Todos, CommunicationBus) {
 
   return {
     allowedFilters : ['', 'active', 'completed'],
+
+    todos : new Todos(),
 
     setFilter : function(filter) {
       if (!_.contains(this.allowedFilters, filter)) {
@@ -24,14 +23,13 @@ define([
       }
 
       var TodoModule = require('modules/todo/todo-module');
-
       var wrapper = new WrapperView({
-        collection : TodoModule.todos
+        collection : this.todos
       });
 
       wrapperView.show(wrapper);
 
-      TodoModule.todos.fetch();
+      this.todos.fetch();
     }
   };
 

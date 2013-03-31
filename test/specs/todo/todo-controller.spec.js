@@ -23,11 +23,7 @@ define([
     /* =|allowedFilters
     ----------------------------------------- */
     it("Should have an allowedFilters array defined with 3 items", function() {
-      expect(TodoController.allowedFilters).toBeDefined();
-      expect(TodoController.allowedFilters.length).toBe(3);
-      expect(TodoController.allowedFilters[0]).toBe('');
-      expect(TodoController.allowedFilters[1]).toBe('active');
-      expect(TodoController.allowedFilters[2]).toBe('completed');
+      expect(TodoController.allowedFilters).toEqual(['', 'active', 'completed']);
     });
 
     /* =|SetItem()
@@ -60,6 +56,9 @@ define([
 
       /* =|Helpers
       ----------------------------------------- */
+      var _mockLayout;
+      var _fetchSpy;
+
       function renderMockLayout() {
         var mockLayout = Marionette.Layout.extend({
           template: '<div id="region"></div>',
@@ -78,33 +77,28 @@ define([
       /* =|Before and after
       ----------------------------------------- */
       beforeEach(function() {
-        var TodoModule = require('modules/todo/todo-module');
+        _mockLayout = renderMockLayout();
+        _fetchSpy = spyOn(TodoController.todos, 'fetch');
 
-        this.mockLayout = renderMockLayout();
-        this.fetchSpy = spyOn(TodoModule.todos, 'fetch');
-
-        TodoController.showInitialLayoutOn(this.mockLayout.region);
+        TodoController.showInitialLayoutOn(_mockLayout.region);
       });
 
       afterEach(function() {
-        this.mockLayout.close();
+        _mockLayout.close();
       });
 
       /* =|Specs
       ----------------------------------------- */
       it("Should put a WrapperView inside given view", function() {
-        expect(this.mockLayout.region.currentView instanceof WrapperView).toBe(true);
+        expect(_mockLayout.region.currentView instanceof WrapperView).toBe(true);
       });
 
       it("Should pass a Todos collection to the WrapperView inside given view", function() {
-        var TodoModule = require('modules/todo/todo-module');
-
-        expect(this.mockLayout.region.currentView.collection).toBe(TodoModule.todos);
-        expect(this.mockLayout.region.currentView.collection instanceof Todos).toBe(true);
+        expect(_mockLayout.region.currentView.collection instanceof Todos).toBe(true);
       });
 
       it("Should call fetch on Todos collection", function() {
-        expect(this.fetchSpy).toHaveBeenCalled();
+        expect(_fetchSpy).toHaveBeenCalled();
       });
 
     });
