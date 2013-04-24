@@ -1,6 +1,6 @@
 define(function() {
   return [
-    'specs/utils/communication-bus.spec.js',
+    'specs/utils/communication-bus-spec.js',
     'specs/app/app-module.spec.js',
     'specs/todo/todo-module.spec.js',
     'specs/todo/todo-router.spec.js',
