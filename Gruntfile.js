@@ -2,6 +2,7 @@ module.exports = function(grunt) {
   /* =DEPENDENCIES
   --------------------------------------------------------------------------- */
   grunt.loadNpmTasks('grunt-contrib-clean');
+  grunt.loadNpmTasks('grunt-contrib-coffee');
   grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-contrib-less');
   grunt.loadNpmTasks('grunt-contrib-requirejs');
@@ -25,6 +26,23 @@ module.exports = function(grunt) {
         command: 'phantomjs test/lib/run-jasmine.js http://localhost:8888/test',
         stdout: true
       }
+    },
+    coffee : {
+      app: {
+        expand: true,
+        cwd: './app/js',
+        src: ['**/*.coffee'],
+        dest: './app/js',
+        ext: '.js'
+      },
+
+      test: {
+        expand: true,
+        cwd: './test',
+        src: ['**/*.coffee'],
+        dest: './test/',
+        ext: '.js'
+      },
     },
     requirejs: {
       compile: {
@@ -59,21 +77,25 @@ module.exports = function(grunt) {
       },
     },
     watch: {
+      coffee : {
+        files: './app/js/**/*.coffee',
+        tasks: ['coffee:app']
+      },
       less: {
         files: './app/css/less/**/*',
         tasks: ['less']
       },
       test: {
-        files: './test/**/*',
-        tasks: ['exec:jasmine']
+        files: './test/specs/**/*.coffee',
+        tasks: ['coffee:test', 'exec:jasmine']
       }
     }
   });
 
   /* =TASKS
   --------------------------------------------------------------------------- */
-  grunt.registerTask('default', ['less:development']);
-  grunt.registerTask('test', ['connect', 'exec:jasmine']);
+  grunt.registerTask('default', ['coffee:app', 'less:development']);
+  grunt.registerTask('test', ['coffee:test', 'connect', 'exec:jasmine']);
   grunt.registerTask('listen', ['connect', 'watch']);
   grunt.registerTask('build', ['clean', 'connect', 'exec:jasmine', 'requirejs', 'less:production']);
 };
