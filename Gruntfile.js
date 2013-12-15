@@ -97,5 +97,5 @@ module.exports = function(grunt) {
   grunt.registerTask('default', ['coffee:app', 'less:development']);
   grunt.registerTask('test', ['coffee:test', 'connect', 'exec:jasmine']);
   grunt.registerTask('listen', ['connect', 'watch']);
-  grunt.registerTask('build', ['clean', 'connect', 'exec:jasmine', 'requirejs', 'less:production']);
+  grunt.registerTask('build', ['clean', 'connect', 'exec:jasmine', 'requirejs', 'less']);
 };
